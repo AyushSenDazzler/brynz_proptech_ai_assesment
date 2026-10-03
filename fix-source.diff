@@ -1,0 +1,9 @@
+--- before/brynz/capture.py
++++ after/brynz/capture.py
+@@ -17,6 +17,6 @@
+     distance = depth[valid]
+     camera = np.column_stack(
+-        ((columns[valid] - cx) * distance / fx, -(rows[valid] - cy) * distance / fy, -distance)
++        ((columns[valid] - cx) * distance / fx, (rows[valid] - cy) * distance / fy, distance)
+     )
+     return camera @ rotation.T + translation
