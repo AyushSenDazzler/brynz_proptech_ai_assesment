@@ -1,11 +1,26 @@
 {
-  "status": "diagnostic correction, not a scored assessment fix loop",
-  "worst_observed_failure": "No footprint recovered from single_room with incorrect camera convention",
-  "before_number": {"enclosing_walls": 0},
-  "hypothesis": "Exported Stray poses use OpenCV camera coordinates, not raw ARKit camera coordinates.",
-  "evidence": ["Smeared horizontal planes and no enclosing walls under raw ARKit sign flips", "StrayVisualizer creates Open3D RGBD points using exported poses directly"],
-  "source": "https://github.com/kekeblom/StrayVisualizer/blob/main/stray_visualize.py",
-  "intended_fix": "Remove image-Y and forward-Z sign flips in the Stray loader.",
-  "prediction": {"enclosing_walls": 4, "scope": "Rectangular initializer only, watershed and drift disabled in both runs"},
-  "limitation": "Root cause discovered during implementation. Declaration is retrospective, not a pre-registered worst-gate declaration. Accuracy improvement unverified without laser/tape ground truth."
+  "declared_before_fix": true,
+  "worst_gate": "Photo-tier whole-property stitch: any picture in, results out",
+  "why_this_gate": "Photos are the mandatory floor tier; derived-sample photo and video runs both return no dimension at all, so this is the worst gate in the local benchmark.",
+  "failing_number": {
+    "metric": "rooms with at least one non-null dimension (photo tier, derived sample)",
+    "before": "0 of 1",
+    "video_tier_for_reference": "0 of 1",
+    "source": "out/benchmark/single-room-photos/result.json from brynz benchmark"
+  },
+  "root_cause_hypothesis": "Photos carry no poses. When structure-from-motion fails to register at least two overlapping views, the pipeline abandons the room and emits nothing, although each photo already has a usable metric depth prediction on its own.",
+  "evidence": [
+    "COLMAP log: No images with matches / Failed to create any sparse model on the derived stills.",
+    "run_rgb_capture converts any SfM failure straight into empty_room(); depth predictions are never used without poses.",
+    "Photo features per image are low in places (39 and 282 SIFT features in two of seven stills)."
+  ],
+  "intended_fix": "When SfM fails, run the metric-depth model on each photo, back-project with a pinhole prior, fit floor and ceiling planes in that single view, and report ceiling height per room with wide, labelled intervals. Footprint and adjacency stay null.",
+  "prediction": {
+    "rooms_with_any_dimension_after": "1 of 1, if at least one still shows both floor and ceiling; 0 of 1 otherwise",
+    "accuracy": "Not predicted. Learned scale and an assumed focal length mean an error above the 8 percent photo gate is likely. No physical ground truth exists, so accuracy stays unscored.",
+    "gate_status_after": "Photo whole-property stitch still FAILS: no footprint, adjacency or overlap-free plan is produced."
+  },
+  "success_criteria": "Rooms with any dimension rises from 0 of 1 to 1 of 1 with labelled, uncalibrated intervals and no fabricated footprint.",
+  "reproduce": "uv run --extra rgb brynz derive single_room --out out/derived && uv run --extra rgb brynz fixloop out/derived/photos --out out/fixloop",
+  "limitations": "Derived stills are cut from one video, not independent iPhone photos. LiDAR-relative comparison is a pseudo-reference."
 }

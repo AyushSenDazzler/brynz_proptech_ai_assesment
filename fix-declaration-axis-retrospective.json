@@ -1,0 +1,11 @@
+{
+  "status": "diagnostic correction, not a scored assessment fix loop",
+  "worst_observed_failure": "No footprint recovered from single_room with incorrect camera convention",
+  "before_number": {"enclosing_walls": 0},
+  "hypothesis": "Exported Stray poses use OpenCV camera coordinates, not raw ARKit camera coordinates.",
+  "evidence": ["Smeared horizontal planes and no enclosing walls under raw ARKit sign flips", "StrayVisualizer creates Open3D RGBD points using exported poses directly"],
+  "source": "https://github.com/kekeblom/StrayVisualizer/blob/main/stray_visualize.py",
+  "intended_fix": "Remove image-Y and forward-Z sign flips in the Stray loader.",
+  "prediction": {"enclosing_walls": 4, "scope": "Rectangular initializer only, watershed and drift disabled in both runs"},
+  "limitation": "Root cause discovered during implementation. Declaration is retrospective, not a pre-registered worst-gate declaration. Accuracy improvement unverified without laser/tape ground truth."
+}
