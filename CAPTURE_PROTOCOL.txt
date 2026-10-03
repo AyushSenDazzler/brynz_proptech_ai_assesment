@@ -1,0 +1,46 @@
+STOCK CAPTURE PROTOCOL - ROUTE 2 (UNTESTED ON A PHYSICAL PHONE HERE)
+
+You need an iPhone 15 or newer. LiDAR requires a Pro/Pro Max with LiDAR.
+Keep normal room lighting on. Open internal doors and keep furniture in place.
+Do not stage real leaks, mold, or structural damage; use harmless removable props.
+
+PHOTOS (BUILT-IN CAMERA, NO DEPTH OR POSES)
+Use the main 1x lens, not panorama, zoom, or portrait mode. Take 6-8 ordinary stills
+per room from different positions around its perimeter, overlapping views by about
+half. Include every wall, floor/ceiling junction and door. Photograph each connector
+as its own room and photograph through shared doorways from BOTH sides. Take a
+step between views; turning in place supplies little triangulation. Include visible
+damage close-ups without replacing room-wide views. Do not rotate or edit exports.
+Put each room's original image files in its own named folder under one property
+folder. Keep 2-8 stills in each folder. Room names do not encode connections.
+
+VIDEO (BUILT-IN CAMERA)
+Use 1080p, 30 fps, the main 1x lens and a level landscape orientation. Walk slowly
+around each room, 30-60 seconds per room, showing floor and ceiling junctions.
+Walk through every connecting door and connector; do not teleport between rooms.
+Revisit the starting doorway. Avoid quick pans and mostly stationary rotation.
+Transfer the original unedited clip, not a messaging-app recompressed copy.
+
+LIDAR
+Install Stray Scanner: https://apps.apple.com/us/app/stray-scanner/id1557051662
+Record the installed app version. Start a new recording; walk slowly, approximately
+0.2-0.4 m/s, within 0.5-3 m of the observed walls. Sweep from floor to ceiling and
+pause at openings for 2 seconds. Walk through connectors, observe doors from both
+sides, then return to the starting view. Capture 30-60 seconds per room, keeping
+the complete property in ONE recording. End recording and transfer the entire
+export folder with depth/, confidence/, odometry.csv, camera_matrix.csv and rgb.mp4.
+Keep imu.csv and any distortion files as raw evidence, even though not used here.
+
+ALL TIERS
+For mirrors/glass, also capture the surrounding opaque frame and wall from oblique
+views; don't point only at reflections. Keep distance from wet-look surfaces, turn
+on lighting, avoid moving people and fast camera motion. Do not change zoom lenses.
+These precautions do not guarantee recovery; weak evidence remains unknown.
+Transfer via USB, iCloud download, or Files export preserving original files.
+On Windows, extract any archive before running; do not pass a ZIP to the pipeline.
+
+RUN (AFTER ONE-TIME SETUP IN RUNBOOK.txt)
+  uv run --extra rgb brynz run C:/captures/property --out out/property
+For video, replace the folder path with the original MP4/MOV path.
+Inspect result.json and plan.png; partial/unknown outputs are not valid surveys.
+This protocol is a proposed route, not a verified install-time or capture-quality claim.

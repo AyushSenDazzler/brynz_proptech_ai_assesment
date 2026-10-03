@@ -1,0 +1,111 @@
+BRYNZ TECHNICAL REPORT - PROTOTYPE, NOT ASSESSMENT READY
+
+1. ARCHITECTURE AND TIER DESIGN
+Python 3.12, uv.lock, CPU only. Stray depth/poses/intrinsics feed a point-cloud
+backend. RGB uses pycolmap CPU SIFT, exhaustive matching and bundle adjustment,
+then Depth Anything V2 Metric Indoor Small, approximately 24.8M parameters / 99 MB.
+Image preparation is capped at 960 pixels, video at 64 frames, photos at 8 per room.
+Sparse triangulations anchor the learned metric-depth scale by median depth ratio.
+Metric scale is learned, not physically observable from arbitrary unposed photos.
+Mean image-camera-up provides an upright-image gravity prior, not measured gravity.
+All room folders enter one shared solve. Disconnected reconstruction components are
+not stitched by arbitrary placement; omitted/failed rooms retain null measurements.
+
+2. GEOMETRY, DRIFT AND OUTPUT
+The Stray export uses OpenCV camera coordinates. Intrinsics come from each frame;
+depth is millimetres. Confidence <2 and ranges outside 0.2-5 m are discarded.
+Depth uses every tenth frame and every third pixel. 2.5 cm voxels bound geometry
+work; deterministic RANSAC extracts planes. Supported wall-axis peaks establish a
+candidate Manhattan rectangle. The model cannot represent every irregular room.
+Floor/ceiling must both have horizontal plane support to report ceiling height.
+An observed-floor watershed can propose multiple non-overlapping room regions when
+enclosing wall evidence exists; raster boundaries are not precision fitted walls.
+Adjacency is a candidate shared-free-space or common-coordinate opening relation.
+Failure to establish overlap-free adjacency fails the whole-property product gate.
+
+Drift correction uses overlapping fragments (15 sampled frames), voxel nearest
+neighbours, robust median translations bounded to 15 cm, and iterative alignment.
+It is local translation-only ICP, not a full pose graph or global loop closure.
+It can reduce overlap error but cannot establish true accumulated drift accuracy.
+On/off ablation produces both plans, dimensions and correction metadata.
+Cloud fragments and camera origins receive the same translation correction for
+opening ray tests and depth-projected damage, keeping projection coordinates aligned.
+
+Openings need rays crossing a candidate wall into geometry beyond it, with low
+occupancy at the crossing. Gaps alone are not detections. Grid extent is a candidate
+width; 8 cm minimum uncertainty does not meet the 2 cm assessment gate.
+Missing floor/ceiling, openings or rooms are not fabricated from priors.
+The output schema is LOCAL and provisional: published Round 1 schema unavailable.
+PNG/SVG plans and NPZ clouds accompany schema-validated JSON.
+
+3. DAMAGE, CONCEALED RULES AND SCOPE
+LiDAR RGB screening uses HSV discoloration and elongated dark-line candidates on
+ten keyframes. This is not semantic damage recognition and is not a trained model.
+Depth projects candidate pixels near fitted walls; bounding-rectangle metric extent
+and surface ID are emitted. Wood, furniture, patterns and shadows cause false flags.
+Cross-frame deduplication is approximate. Depth/video frame-index sync is assumed.
+RGB-only damage projection is currently unsupported. All damage is review_required.
+Concealed-moisture flags retain the fired rule and never assert a hidden leak.
+Scope items request inspection and carry area intervals; no final repair estimate
+or automatic scope approval is produced. Staged-class benchmarks are missing.
+
+4. ERROR BUDGET AND CALIBRATION
+LiDAR dimensions carry >=4 cm / approximately 2% engineering bounds for fitted
+rectangles, larger grid-boundary errors for watershed partitions. Height bound is
+>=3 cm plus plane residuals. These are NOT calibrated statistical intervals.
+Sources: device bias, intrinsics and lens distortion, tracking drift, surfaces not
+observed, furniture, model assumptions and raster resolution. Distortion is logged
+but not corrected. Gravity uncertainty is not fully propagated.
+RGB bounds include >=12% for video / >=25% for photos plus scale median deviation;
+this acknowledges weaker priors but does not establish empirical interval coverage.
+Held-out physical GT is needed for calibration. The scorer reports interval coverage,
+not a false calibrated-pass claim. LiDAR-relative pseudo-labels cannot prove accuracy.
+
+5. BENCHMARK AND FIX LOOP
+Available raw samples: single_room, nested single_scan_floor_only, and an incoming
+single_scan_with_ceiling export. The latter ran separately in 39.81 seconds, with
+candidate ceiling height 2.33231 m and uncalibrated bounds [2.23666, 2.42795] m.
+It is supplemental evidence in out/ceiling, not physically measured accuracy.
+RGB tests are derived from the first scan's video, not independent device captures.
+Actual timings/results are in out/benchmark/benchmark.json; they are regenerated.
+Both RGB tiers currently fail to establish an enclosing room footprint on samples.
+Original LiDAR sample produces partial geometry; its ceiling is unobserved.
+There are no physical accuracy scores for any sample.
+No 3-room benchmark, staged damage, independent repeats, or incumbent app exports.
+Head-to-head scoring helper exists but no app comparison has been executed.
+Repeatability helper separates independent captures from one-scan subsampling.
+
+A real loader defect was shipped: using raw ARKit sign flips on Stray's converted
+OpenCV poses smears surfaces. The legacy mode regenerates the before run; corrected
+mode regenerates the after run. The rectangular diagnostic recovered 0 versus 4 walls.
+Both JSON/plans and an output diff are in out/fixloop; fix-source.diff shows the
+source correction. Drift and watershed are disabled equally for both runs.
+The declaration is explicitly
+RETROSPECTIVE and not a pre-registered worst measured gate. No scored gate movement
+or 25% fix-loop compliance is claimed. Watershed boundary counts are unstable
+under small corrections and are not the isolated rectangular diagnostic metric.
+The user requested no Git writes; checkpoint.json replaces only progress recording,
+not the assessment's commit-history evidence. User must commit genuine milestones.
+
+6. FAILURES, DEVICES, REPRODUCTION AND DISCLOSURES
+Photos/video intended for iPhone 15+; LiDAR for LiDAR-equipped Pro devices.
+Physical compatibility, stock protocol usability and install time are unverified.
+Device matrix: device-matrix.json. Requirement status: compliance.json.
+Photos with no overlapping views, pure rotation, repeated textures or thin room
+coverage fail SfM. Learned metric depth cannot guarantee 8% photo or 3% video error.
+Mirrors may produce apparent behind-wall hits; glass may have no depth. Wet glossy
+surfaces and low light increase holes/outliers. Confidence filtering is insufficient
+to distinguish all reflections. Furniture may be mistaken for wall/floor surfaces.
+Alcoves and non-Manhattan rooms are not reliably reconstructed. Floor watershed can
+oversegment furniture or merge a wide doorway. Disconnected photo rooms cannot have
+their adjacency inferred uniquely; the pipeline reports insufficient evidence.
+
+No remote inference. Model weights fetched by script/CLI, loaded locally, cached by
+input/model hash. --live bypasses depth cache. Cache replay reproduces depth arrays;
+bit-identical SfM result JSON across machines is NOT certified. LiDAR determinism is
+tested locally. uv.lock pins installed packages; reproduction needs raw data too.
+Model: depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf, fine-tuned on Hypersim.
+Model source/card: https://huggingface.co/depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf
+Depth Anything V2 Small is Apache-2.0 upstream; verify redistributed weight terms.
+COLMAP/pycolmap is BSD-licensed. Stray Scanner source is MIT-licensed.
+The supplied captures have unknown provenance/licensing; no capture ownership claimed.
