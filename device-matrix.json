@@ -2,8 +2,26 @@
   "compute": "Windows CPU, Python 3.12; optional CPU PyTorch / pycolmap",
   "physical_device_verification": false,
   "tiers": [
-    {"tier": "photos", "intended_hardware": "iPhone 15 or newer, including non-Pro", "inputs": "2-8 unposed stills per room", "observed_status": "Sample derived stills fail SfM", "accuracy": "Unverified; cannot claim +/-8% or calibrated intervals"},
-    {"tier": "video", "intended_hardware": "iPhone 15 or newer, including non-Pro", "inputs": "Original walkthrough MP4/MOV", "observed_status": "Sample video registers only a subset; footprint unknown", "accuracy": "Unverified; cannot claim +/-3% or calibrated intervals"},
-    {"tier": "lidar", "intended_hardware": "LiDAR-equipped iPhone Pro/Pro Max", "inputs": "Stray Scanner raw depth, confidence, poses, intrinsics and RGB", "observed_status": "Original sample partial wall/area candidates; incoming ceiling sample gives unverified 2.33231m height", "accuracy": "Unverified without physical GT; opening/height engineering bounds exceed assessment thresholds"}
+    {
+      "tier": "photos",
+      "intended_hardware": "iPhone 15 or newer, including non-Pro",
+      "inputs": "2-8 unposed stills per room",
+      "observed_status": "Derived stills: SfM fails; single-view fallback finds no view with floor and ceiling; no dimension",
+      "accuracy": "Unverified; cannot claim +/-8% or calibrated intervals"
+    },
+    {
+      "tier": "video",
+      "intended_hardware": "iPhone 15 or newer, including non-Pro",
+      "inputs": "Original walkthrough MP4/MOV",
+      "observed_status": "Sample video registers a subset of frames; no dimension",
+      "accuracy": "Unverified; cannot claim +/-3% or calibrated intervals"
+    },
+    {
+      "tier": "lidar",
+      "intended_hardware": "LiDAR-equipped iPhone Pro/Pro Max",
+      "inputs": "Stray Scanner raw depth, confidence, poses, intrinsics and RGB",
+      "observed_status": "Original sample partial wall/area candidates; incoming ceiling sample gives unverified 2.33231m height",
+      "accuracy": "Unverified without physical GT; opening/height engineering bounds exceed assessment thresholds"
+    }
   ]
 }

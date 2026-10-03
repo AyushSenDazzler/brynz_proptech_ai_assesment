@@ -1,33 +1,173 @@
 {
   "assessment_ready": false,
   "requirements": [
-    {"requirement": "Stock capture route", "file": "CAPTURE_PROTOCOL.txt", "artifact": "One-page proposed protocol", "status": "implemented, physical trial missing"},
-    {"requirement": "Device matrix", "file": "device-matrix.json", "artifact": "Intended devices and honest accuracy status", "status": "implemented, hardware unverified"},
-    {"requirement": "uv clean-machine setup", "file": "RUNBOOK.txt", "artifact": "uv.lock and setup commands", "status": "tested locally; clean-machine time unverified"},
-    {"requirement": "One command per capture", "file": "brynz/cli.py", "artifact": "brynz run", "status": "implemented at all tiers; RGB geometry incomplete"},
-    {"requirement": "Dimensioned walls / area / ceiling", "file": "brynz/geometry.py", "artifact": "result.json / plan.png", "status": "partial; room model assumptions and missing ceiling"},
-    {"requirement": "Openings / <=2cm on >=85% including detection", "file": "brynz/openings.py", "artifact": "Ray-supported candidates", "status": "candidate implementation; gate unverified and bounds too wide"},
-    {"requirement": "Ceiling <=1.5cm / spread <=1cm", "file": "brynz/geometry.py", "artifact": "out/ceiling/result.json", "status": "incoming sample height 2.33231m; uncalibrated and no physical GT / independent repeat"},
-    {"requirement": "Whole-property plan / correct adjacency", "file": "brynz/stitch.py", "artifact": "Candidate floor partitions / shared-coordinate adjacency", "status": "not satisfied; no real multi-room validation"},
-    {"requirement": "Photo folders stitched / no overlaps / +/-8%", "file": "brynz/rgb.py", "artifact": "Joint SfM and overlap diagnostics", "status": "not satisfied on sample photos"},
-    {"requirement": "Video wall accuracy +/-3%", "file": "brynz/rgb.py", "artifact": "Local metric-depth frontend", "status": "not satisfied on sample video"},
-    {"requirement": "Per-surface damage classes / metric extent", "file": "brynz/damage.py", "artifact": "LiDAR discoloration / dark-line candidates", "status": "partial heuristic, not validated damage recognition; RGB unsupported"},
-    {"requirement": "Concealed flags with rules", "file": "brynz/damage.py", "artifact": "Review-only rule outputs", "status": "implemented for candidate water stains only"},
-    {"requirement": "Surface-keyed scope", "file": "brynz/damage.py", "artifact": "Inspection quantities and intervals", "status": "partial; not final repair line items"},
-    {"requirement": "Calibrated intervals on every measurement", "file": "brynz/geometry.py", "artifact": "Engineering bounds explicitly uncalibrated", "status": "not satisfied; physical calibration data missing"},
-    {"requirement": "Published JSON schema", "file": "brynz/output.schema.json", "artifact": "Local provisional schema validation", "status": "blocked; published Round 1 schema not supplied"},
-    {"requirement": "Rendered plan", "file": "brynz/output.py", "artifact": "PNG and SVG", "status": "implemented; unknown-state plan on insufficient geometry"},
-    {"requirement": "3+ rooms plus connector at all tiers", "file": "benchmark-manifest.json", "artifact": "Missing requirement declared", "status": "blocked: no captures"},
-    {"requirement": "Furnished room / two staged damage classes", "file": "benchmark-manifest.json", "artifact": "Missing requirement declared", "status": "blocked: no staged benchmark"},
-    {"requirement": "Independent repeat captures / wall repeatability", "file": "brynz/benchmark.py", "artifact": "Repeatability scorer", "status": "blocked: no independent repeat scans"},
-    {"requirement": "Laser / tape GT and raw measurements", "file": "benchmark-manifest.json", "artifact": "GT input contract", "status": "blocked: no measured ground truth"},
-    {"requirement": "Drift correction / on-off ablation", "file": "brynz/geometry.py", "artifact": "out/ablation", "status": "local translation correction implemented; global accuracy unverified"},
-    {"requirement": "Incumbent comparison on two rooms / >=70%", "file": "brynz/benchmark.py", "artifact": "head_to_head helper", "status": "blocked: no app exports/version or measured rooms"},
-    {"requirement": "Worst-gate declaration / regenerable fix loop", "file": "fix-declaration.json", "artifact": "out/fixloop", "status": "diagnostic correction reproducible; scored fix-loop contract not satisfied"},
-    {"requirement": "Process history", "file": "checkpoint.json", "artifact": "Progress checkpoint", "status": "user owns Git commits; checkpoint is not commit-history compliance"},
-    {"requirement": "Reproduction bundle", "file": "RUNBOOK.txt", "artifact": "out/submission/brynz-submission.zip", "status": "bundle command packages source, samples, evidence and lockfile; weights fetched separately"},
-    {"requirement": "Technical report <=6 pages", "file": "REPORT.txt", "artifact": "out/report/report.pdf", "status": "generated and verified at 2 pages"},
-    {"requirement": "Mirrors / glass / glossy surfaces / low light", "file": "REPORT.txt", "artifact": "Failure modes and protocol precautions", "status": "documented, not empirically validated"},
-    {"requirement": "Cold unseen walk-in test", "file": "brynz/cli.py", "artifact": "Live local path", "status": "not ready: RGB footprint / topology / accuracy gates unresolved"}
+    {
+      "requirement": "Stock capture route",
+      "file": "CAPTURE_PROTOCOL.txt",
+      "artifact": "One-page proposed protocol",
+      "status": "implemented, physical trial missing"
+    },
+    {
+      "requirement": "Device matrix",
+      "file": "device-matrix.json",
+      "artifact": "Intended devices and honest accuracy status",
+      "status": "implemented, hardware unverified"
+    },
+    {
+      "requirement": "uv clean-machine setup",
+      "file": "RUNBOOK.txt",
+      "artifact": "uv.lock and setup commands",
+      "status": "tested locally; clean-machine time unverified"
+    },
+    {
+      "requirement": "One command per capture",
+      "file": "brynz/cli.py",
+      "artifact": "brynz run",
+      "status": "implemented at all tiers; RGB geometry incomplete"
+    },
+    {
+      "requirement": "Dimensioned walls / area / ceiling",
+      "file": "brynz/geometry.py",
+      "artifact": "result.json / plan.png",
+      "status": "partial; room model assumptions and missing ceiling"
+    },
+    {
+      "requirement": "Openings / <=2cm on >=85% including detection",
+      "file": "brynz/openings.py",
+      "artifact": "Ray-supported candidates",
+      "status": "candidate implementation; gate unverified and bounds too wide"
+    },
+    {
+      "requirement": "Ceiling <=1.5cm / spread <=1cm",
+      "file": "brynz/geometry.py",
+      "artifact": "out/ceiling/result.json",
+      "status": "incoming sample height 2.33231m; uncalibrated and no physical GT / independent repeat"
+    },
+    {
+      "requirement": "Whole-property plan / correct adjacency",
+      "file": "brynz/stitch.py",
+      "artifact": "Candidate floor partitions / shared-coordinate adjacency",
+      "status": "not satisfied; no real multi-room validation"
+    },
+    {
+      "requirement": "Photo folders stitched / no overlaps / +/-8%",
+      "file": "brynz/rgb.py",
+      "artifact": "Joint SfM, overlap diagnostics, single-view ceiling fallback",
+      "status": "not satisfied: sample photos yield no dimension, fallback finds no floor+ceiling view"
+    },
+    {
+      "requirement": "Video wall accuracy +/-3%",
+      "file": "brynz/rgb.py",
+      "artifact": "Local metric-depth frontend",
+      "status": "not satisfied on sample video"
+    },
+    {
+      "requirement": "Per-surface damage classes / metric extent",
+      "file": "brynz/damage.py",
+      "artifact": "LiDAR discoloration / dark-line candidates",
+      "status": "heuristic, opt-in (--damage), not validated damage recognition; RGB unsupported"
+    },
+    {
+      "requirement": "Concealed flags with rules",
+      "file": "brynz/damage.py",
+      "artifact": "Review-only rule outputs",
+      "status": "implemented for candidate water stains only"
+    },
+    {
+      "requirement": "Surface-keyed scope",
+      "file": "brynz/damage.py",
+      "artifact": "Inspection quantities and intervals",
+      "status": "partial; not final repair line items"
+    },
+    {
+      "requirement": "Calibrated intervals on every measurement",
+      "file": "brynz/geometry.py",
+      "artifact": "Engineering bounds explicitly uncalibrated",
+      "status": "not satisfied; physical calibration data missing"
+    },
+    {
+      "requirement": "Published JSON schema",
+      "file": "brynz/output.schema.json",
+      "artifact": "Local provisional schema validation",
+      "status": "blocked; published Round 1 schema not supplied"
+    },
+    {
+      "requirement": "Rendered plan",
+      "file": "brynz/output.py",
+      "artifact": "PNG and SVG",
+      "status": "implemented; unknown-state plan on insufficient geometry"
+    },
+    {
+      "requirement": "3+ rooms plus connector at all tiers",
+      "file": "benchmark-manifest.json",
+      "artifact": "Missing requirement declared",
+      "status": "blocked: no captures"
+    },
+    {
+      "requirement": "Furnished room / two staged damage classes",
+      "file": "benchmark-manifest.json",
+      "artifact": "Missing requirement declared",
+      "status": "blocked: no staged benchmark"
+    },
+    {
+      "requirement": "Independent repeat captures / wall repeatability",
+      "file": "brynz/benchmark.py",
+      "artifact": "Repeatability scorer",
+      "status": "blocked: no independent repeat scans"
+    },
+    {
+      "requirement": "Laser / tape GT and raw measurements",
+      "file": "benchmark-manifest.json",
+      "artifact": "GT input contract",
+      "status": "blocked: no measured ground truth"
+    },
+    {
+      "requirement": "Drift correction / on-off ablation",
+      "file": "brynz/geometry.py",
+      "artifact": "evidence/ablation.json (20.86 m2 on, 20.74 m2 off)",
+      "status": "local translation correction implemented; global accuracy unverified"
+    },
+    {
+      "requirement": "Incumbent comparison on two rooms / >=70%",
+      "file": "brynz/benchmark.py",
+      "artifact": "head_to_head helper",
+      "status": "blocked: no app exports/version or measured rooms"
+    },
+    {
+      "requirement": "Worst-gate declaration / regenerable fix loop",
+      "file": "fix-declaration.json",
+      "artifact": "fix-postmortem.json; evidence/fixloop*; git diff fix-before fix-after",
+      "status": "declared before fix, fix shipped, regenerable before/after; gate did not move (0 of 1 -> 0 of 1); post-mortem written"
+    },
+    {
+      "requirement": "Process history",
+      "file": ".git",
+      "artifact": "git log (local commits, repo-local identity)",
+      "status": "milestone commits made today in order; history is short and begins at deadline day"
+    },
+    {
+      "requirement": "Reproduction bundle",
+      "file": "RUNBOOK.txt",
+      "artifact": "out/submission/brynz-submission.zip (includes .git)",
+      "status": "bundle includes source, .git, samples, evidence and lockfile; weights fetched separately"
+    },
+    {
+      "requirement": "Technical report <=6 pages",
+      "file": "REPORT.txt",
+      "artifact": "out/report/report.pdf",
+      "status": "generated and verified at 2 pages"
+    },
+    {
+      "requirement": "Mirrors / glass / glossy surfaces / low light",
+      "file": "REPORT.txt",
+      "artifact": "Failure modes and protocol precautions",
+      "status": "documented, not empirically validated"
+    },
+    {
+      "requirement": "Cold unseen walk-in test",
+      "file": "brynz/cli.py",
+      "artifact": "Live local path",
+      "status": "not ready: RGB footprint / topology / accuracy gates unresolved"
+    }
   ]
 }

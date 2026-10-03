@@ -2,8 +2,8 @@ BRYNZ: CPU-FIRST ROOM CAPTURE PROTOTYPE
 
 IMPORTANT: This is not an assessment-passing submission. Read compliance.json.
 LiDAR geometry runs locally. RGB frontends run but the supplied RGB examples do
-not recover a room footprint. No accuracy gate is verified without ground truth.
-No Git commits, tags, branches, or repository initialization are performed.
+not recover a room footprint or any dimension. No accuracy gate is verified
+without ground truth. History: git log; tags fix-before and fix-after.
 
 INSTALL (Windows PowerShell, from this directory)
   uv sync --python 3.12
@@ -45,12 +45,19 @@ Candidate openings/damage/topology require review; empty lists are not absence c
 --no-drift-correction produces the raw-pose ablation.
 --start/--stop are frame-record offsets; splitting a scan is not repeatability GT.
 --camera-convention legacy-arkit exists only to regenerate the known loader bug.
-Use --layout rectangle to disable watershed partitioning for an isolated room fit.
+Use --layout partition enables the experimental watershed room split; the default is
+one fitted rectangle per capture.
+--damage turns on the heuristic LiDAR damage screen; it is off by default because it
+flags false positives on undamaged rooms.
+--no-single-view-fallback disables the photo/video ceiling-height fallback.
 
 REPRODUCE CURRENT EVIDENCE
   uv run --extra rgb brynz derive single_room --out out/derived
   uv run --extra rgb brynz benchmark benchmark-manifest.json --out out/benchmark
-  uv run --extra rgb brynz fixloop single_room --out out/fixloop
+  uv run --extra rgb brynz derive single_scan_with_ceiling --out out/derived-ceiling
+  uv run --extra rgb brynz fixloop out/derived/photos --out out/fixloop
+  uv run --extra rgb brynz fixloop out/derived-ceiling/photos --out out/fixloop-ceiling
+  uv run --extra rgb brynz fixloop-axis single_room --out out/fixloop-axis
   uv run --extra rgb brynz ablation single_room --out out/ablation
   uv run --extra rgb brynz inventory single_room --out out/inventory/single-room
   uv run --extra rgb brynz report REPORT.txt --out out/report
@@ -77,19 +84,24 @@ No incumbent app exports, app version, or real head-to-head results are supplied
 REPRODUCTION BUNDLE CONTENTS
 Include source + uv.lock + raw capture folders + ground truth + app exports,
 and the complete out/benchmark, out/fixloop and out/ablation directories.
-The bundle command packages source, uv.lock, sample captures and generated evidence
-into out/submission/brynz-submission.zip. It excludes .venv and model binaries.
+The bundle command packages source, .git history, uv.lock, sample captures, committed
+evidence/ and generated evidence into out/submission/brynz-submission.zip. It
+excludes .venv and model binaries.
 Fetch model weights with fetch-model or include models/metric-small as a volume.
-Raw data, model binaries and generated outputs are excluded from Git by default.
-checkpoint.json records actual progress and remaining work; it is not Git history.
+Raw data, model binaries and generated outputs are excluded from Git by default;
+evidence/ holds the small before/after fix-loop results that ARE committed.
+
+GIT: unzip, then 'git remote add origin <url>' and 'git push -u origin main --tags'.
+Commit identity is set in the repository-local config only, not globally.
 
 PRIORITIES BEFORE SUBMISSION
 1. Obtain the published Round 1 schema and laser/tape ground truth.
 2. Obtain a real 3-room-plus-connector capture at ALL tiers, independent repeats,
    staged damage and an incumbent app export. These cannot be manufactured by code.
-3. Fix RGB registration/layout failure and validate sparse-photo property stitching.
+3. Photo/video still produce no dimension on the samples; they need cross-view
+   scale (poses, gravity) or a wide shot showing floor and ceiling together.
 4. Calibrate intervals on held-out physical measurements, not LiDAR pseudo-labels.
-5. Declare a worst measured gate, make a prediction BEFORE the fix, then ship/retest.
+5. Declare the next worst measured gate and prediction BEFORE changing code.
 
 REPORT.txt describes algorithms and failure modes. CAPTURE_PROTOCOL.txt is the
 stock capture route; its usability/device behavior still needs a physical trial.
