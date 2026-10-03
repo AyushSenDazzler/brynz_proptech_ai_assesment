@@ -11,6 +11,8 @@ def test_bundle_contains_evidence_but_not_environment_or_weights(tmp_path):
         "single_room/odometry.csv",
         "out/benchmark/benchmark.json",
         "models/model.safetensors",
+        ".git/HEAD",
+        "evidence/fixloop/summary.json",
         ".venv/python.exe",
     ]:
         path = tmp_path / relative
@@ -22,5 +24,7 @@ def test_bundle_contains_evidence_but_not_environment_or_weights(tmp_path):
         assert "pyproject.toml" in names
         assert "single_room/odometry.csv" in names
         assert "out/benchmark/benchmark.json" in names
+        assert ".git/HEAD" in names
+        assert "evidence/fixloop/summary.json" in names
         assert not any(name.startswith(("models/", ".venv/")) for name in names)
         assert archive.testzip() is None

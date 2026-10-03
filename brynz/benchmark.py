@@ -357,39 +357,15 @@ def bundle(path, out):
 
     path, out = Path(path).resolve(), Path(out).resolve()
     out.mkdir(parents=True, exist_ok=True)
-    root_files = [
-        "pyproject.toml",
-        "uv.lock",
-        ".gitignore",
-        "RUNBOOK.txt",
-        "CAPTURE_PROTOCOL.txt",
-        "REPORT.txt",
-        "device-matrix.json",
-        "compliance.json",
-        "checkpoint.json",
-        "benchmark-manifest.json",
-        "fix-declaration.json",
-        "fix-source.diff",
-    ]
-    directories = [path / "brynz", path / "tests"]
+    directories = [path / "brynz", path / "tests", path / "evidence", path / ".git"]
     directories.extend(
         item
         for item in path.iterdir()
         if item.is_dir() and (item.name == "single_room" or item.name.startswith("single_scan_"))
     )
-    directories.extend(
-        path / "out" / name
-        for name in [
-            "benchmark",
-            "derived",
-            "fixloop",
-            "ablation",
-            "report",
-            "protocol",
-            "inventory",
-        ]
-    )
-    files = [path / name for name in root_files if (path / name).exists()]
+    if (path / "out").is_dir():
+        directories.extend(item for item in (path / "out").iterdir() if item.is_dir())
+    files = [item for item in path.iterdir() if item.is_file()]
     for directory in directories:
         if directory.exists():
             files.extend(
@@ -405,6 +381,7 @@ def bundle(path, out):
         "output": str(target),
         "files": len(set(files)),
         "bytes": target.stat().st_size,
+        "contains_git_history": any(file.is_relative_to(path / ".git") for file in files),
         "weights": "Fetch locally with uv run --extra rgb brynz fetch-model",
         "assessment_ready": False,
     }
