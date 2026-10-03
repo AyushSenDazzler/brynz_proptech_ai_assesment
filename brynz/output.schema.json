@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Brynz local provisional contract (not the unavailable Round 1 schema)",
+  "type": "object",
+  "required": ["schema_version", "tier", "status", "rooms", "adjacency", "damage_regions", "concealed_flags", "scope_items", "warnings", "provenance", "drift"],
+  "properties": {
+    "schema_version": {"const": "brynz-local-0.1"},
+    "tier": {"enum": ["lidar", "video", "photos"]},
+    "status": {"enum": ["partial", "insufficient_evidence"]},
+    "rooms": {"type": "array", "items": {"$ref": "#/$defs/room"}},
+    "adjacency": {"type": "array"},
+    "damage_regions": {"type": "array"},
+    "concealed_flags": {"type": "array"},
+    "scope_items": {"type": "array"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "provenance": {"type": "object"},
+    "drift": {"type": "object"}
+  },
+  "$defs": {
+    "measurement": {
+      "type": "object",
+      "required": ["value", "interval", "unit", "status", "reason"],
+      "properties": {
+        "value": {"type": ["number", "null"], "minimum": 0},
+        "interval": {"oneOf": [{"type": "null"}, {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2}]},
+        "unit": {"enum": ["m", "m2"]},
+        "status": {"enum": ["uncalibrated", "unobserved"]},
+        "reason": {"type": ["string", "null"]}
+      },
+      "allOf": [{"if": {"properties": {"value": {"type": "null"}}}, "then": {"properties": {"interval": {"type": "null"}, "status": {"const": "unobserved"}}}, "else": {"properties": {"interval": {"type": "array"}, "status": {"const": "uncalibrated"}}}}]
+    },
+    "point": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+    "room": {
+      "type": "object",
+      "required": ["id", "name", "polygon", "walls", "openings", "floor_area", "ceiling_height"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "polygon": {"type": "array", "items": {"$ref": "#/$defs/point"}},
+        "walls": {"type": "array", "items": {"type": "object", "required": ["id", "start", "end", "length"], "properties": {"id": {"type": "string"}, "start": {"$ref": "#/$defs/point"}, "end": {"$ref": "#/$defs/point"}, "length": {"$ref": "#/$defs/measurement"}}}},
+        "openings": {"type": "array"},
+        "floor_area": {"$ref": "#/$defs/measurement"},
+        "ceiling_height": {"$ref": "#/$defs/measurement"}
+      }
+    }
+  }
+}
