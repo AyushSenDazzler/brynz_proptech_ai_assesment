@@ -179,12 +179,40 @@ def benchmark(manifest_path, out):
     return report
 
 
+def _upright_from_poses(odometry_path):
+    import csv
+
+    import cv2
+    import numpy as np
+    from scipy.spatial.transform import Rotation
+
+    with Path(odometry_path).open(newline="", encoding="utf-8-sig") as stream:
+        rows = list(csv.DictReader(stream, skipinitialspace=True))
+
+    def orient(frame, image):
+        row = rows[min(frame, len(rows) - 1)]
+        rotation = Rotation.from_quat([float(row[key]) for key in ("qx", "qy", "qz", "qw")])
+        down = rotation.as_matrix().T @ np.array([0.0, -1.0, 0.0])
+        if abs(down[0]) > abs(down[1]):
+            return cv2.rotate(
+                image, cv2.ROTATE_90_CLOCKWISE if down[0] > 0 else cv2.ROTATE_90_COUNTERCLOCKWISE
+            )
+        return image if down[1] > 0 else cv2.rotate(image, cv2.ROTATE_180)
+
+    return orient
+
+
 def derive_inputs(path, out):
     from brynz.rgb import sample_video
 
     path, out = Path(path), Path(out)
+    nested = list(path.glob("*/odometry.csv")) if path.is_dir() else []
+    if path.is_dir() and not (path / "odometry.csv").exists() and len(nested) == 1:
+        path = nested[0].parent
     source = path / "rgb.mp4" if path.is_dir() else path
-    names = sample_video(source, out / "photos" / "room-1", count=8)
+    odometry = path / "odometry.csv"
+    orient = _upright_from_poses(odometry) if odometry.exists() else None
+    names = sample_video(source, out / "photos" / "room-1", count=8, orient=orient)
     write_json(
         out / "derivation.json",
         {
@@ -192,13 +220,17 @@ def derive_inputs(path, out):
             "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "photos": names,
             "video": str(source.resolve()),
-            "note": "Derived samples, not independent iPhone photo captures; no hidden depth or pose input.",
+            "orientation": "Stills rotated upright by 90-degree steps from logged gravity, as an iPhone "
+            "EXIF orientation tag would; no depth or pose reaches the pipeline."
+            if orient
+            else "none",
+            "note": "Derived samples, not independent iPhone photo captures.",
         },
     )
     return out / "photos"
 
 
-def fixloop(path, out):
+def fixloop_axis(path, out):
     from brynz.cli import run_capture
 
     out = Path(out)
@@ -230,6 +262,44 @@ def fixloop(path, out):
         "reproduction": "Same code, data, sampling, rectangle layout, and disabled drift; only camera convention changes.",
         "declaration": "fix-declaration.json",
         "prediction": "4 enclosing walls after correction, 0 before",
+    }
+    write_json(out / "summary.json", summary)
+    return summary
+
+
+def _measured_rooms(result):
+    return sum(
+        1
+        for room in result["rooms"]
+        if room["polygon"] or room["ceiling_height"]["value"] is not None
+    )
+
+
+def fixloop(path, out):
+    from brynz.cli import run_capture
+
+    out = Path(out)
+    before = run_capture(path, out / "before", fallback=False)
+    after = run_capture(path, out / "after", fallback=True)
+    diff = "\n".join(
+        difflib.unified_diff(
+            json.dumps(before, indent=2).splitlines(),
+            json.dumps(after, indent=2).splitlines(),
+            fromfile="before/result.json",
+            tofile="after/result.json",
+        )
+    )
+    (out / "results.diff").write_text(diff + "\n", encoding="utf-8")
+    total = len(after["rooms"])
+    summary = {
+        "gate": "Photo-tier any picture in, results out",
+        "metric": "rooms with at least one non-null dimension",
+        "before": f"{_measured_rooms(before)} of {len(before['rooms'])}",
+        "after": f"{_measured_rooms(after)} of {total}",
+        "after_ceiling_heights": {room["id"]: room["ceiling_height"] for room in after["rooms"]},
+        "footprint_recovered_after": any(room["polygon"] for room in after["rooms"]),
+        "accuracy": "unscored: no physical ground truth",
+        "declaration": "fix-declaration.json",
     }
     write_json(out / "summary.json", summary)
     return summary
