@@ -5,10 +5,12 @@ import cv2
 import numpy as np
 from PIL import Image, ImageOps
 
-from brynz.geometry import measurement
+from brynz.geometry import extract_planes, measurement
 
 MODEL_ID = "depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".heic", ".heif"}
+# Stray Scanner iPhone main-lens fx / long-side pixels: 1599.7 / 1920.
+FOCAL_PER_LONG_SIDE = 0.833
 
 
 def empty_room(room_id, reason):
@@ -24,7 +26,7 @@ def empty_room(room_id, reason):
     }
 
 
-def sample_video(path, directory, count=64, max_side=960):
+def sample_video(path, directory, count=64, max_side=960, orient=None):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     capture = cv2.VideoCapture(str(path))
@@ -39,6 +41,8 @@ def sample_video(path, directory, count=64, max_side=960):
             success, image = capture.read()
             if not success:
                 continue
+            if orient is not None:
+                image = orient(int(frame), image)
             scale = min(1, max_side / max(image.shape[:2]))
             image = cv2.resize(image, None, fx=scale, fy=scale)
             name = f"frame_{index:04}.jpg"
@@ -113,6 +117,16 @@ def _depth_model(directory):
     return processor, model
 
 
+def _model_key(model_dir):
+    digest = hashlib.sha256((model_dir / "config.json").read_bytes())
+    digest.update((model_dir / "preprocessor_config.json").read_bytes())
+    for weights in sorted(model_dir.glob("*.safetensors")):
+        with weights.open("rb") as stream:
+            while block := stream.read(1024 * 1024):
+                digest.update(block)
+    return digest.hexdigest()
+
+
 def _predict_depth(image_path, processor, model, cache, model_key, use_cache=True):
     import torch
 
@@ -176,13 +190,7 @@ def reconstruct_rgb(images, groups, workspace, model_dir, use_cache=True):
         )
     reconstruction = max(reconstructions.values(), key=lambda item: item.num_reg_images())
     processor, model = _depth_model(model_dir)
-    model_key = hashlib.sha256((model_dir / "config.json").read_bytes())
-    model_key.update((model_dir / "preprocessor_config.json").read_bytes())
-    for weights in sorted(model_dir.glob("*.safetensors")):
-        with weights.open("rb") as stream:
-            while block := stream.read(1024 * 1024):
-                model_key.update(block)
-    model_key = model_key.hexdigest()
+    model_key = _model_key(model_dir)
     cache = workspace / "depth_cache"
     cache.mkdir(exist_ok=True)
     depths, ratios, registered = {}, [], {}
@@ -258,3 +266,73 @@ def reconstruct_rgb(images, groups, workspace, model_dir, use_cache=True):
         "warning": "Metric scale and gravity inferred, not measured; disconnected images omitted.",
     }
     return clouds, metadata, observations
+
+
+def view_ceiling_height(points):
+    """Floor-to-ceiling distance from one camera-frame cloud (OpenCV axes, y down)."""
+    if len(points) < 2000:
+        return None
+    floors, ceilings = [], []
+    for plane in extract_planes(points, max_planes=8, threshold=0.08):
+        if abs(plane["normal"][1]) < 0.85:
+            continue
+        up = -plane["normal"] if plane["normal"][1] > 0 else plane["normal"]
+        level = float(plane["center"] @ up)
+        if level < -0.3:
+            floors.append((plane["count"], plane["center"], up))
+        elif level > 0.3:
+            ceilings.append((plane["count"], plane["center"], up))
+    if not floors or not ceilings:
+        return None
+    _, floor_center, floor_up = max(floors, key=lambda item: item[0])
+    _, ceiling_center, ceiling_up = max(ceilings, key=lambda item: item[0])
+    if floor_up @ ceiling_up < 0.95:
+        return None
+    height = float((ceiling_center - floor_center) @ floor_up)
+    return height if 1.8 <= height <= 4.5 else None
+
+
+def ceiling_measurement(values):
+    if not values:
+        return measurement(reason="No photo showed both floor and ceiling planes.")
+    value = float(np.median(values))
+    spread = float(np.median(np.abs(np.asarray(values) - value))) / value if len(values) > 1 else 0
+    return measurement(
+        value,
+        value * max(0.25, 2 * spread),
+        reason=f"Single-view estimate from {len(values)} photo(s); no cross-view geometry.",
+    )
+
+
+def single_view_ceilings(images, groups, workspace, model_dir, use_cache=True):
+    model_dir = Path(model_dir)
+    if not (model_dir / "config.json").exists():
+        raise ValueError(
+            "Metric depth weights missing. Run uv run --extra rgb brynz fetch-model first."
+        )
+    processor, model = _depth_model(model_dir)
+    key = _model_key(model_dir)
+    cache = Path(workspace) / "depth_cache"
+    cache.mkdir(parents=True, exist_ok=True)
+    found = {}
+    for room_id, names in groups.items():
+        values = []
+        for name in names:
+            depth, _ = _predict_depth(Path(images) / name, processor, model, cache, key, use_cache)
+            height, width = depth.shape
+            focal = FOCAL_PER_LONG_SIDE * max(height, width)
+            rows, columns = np.mgrid[0:height:6, 0:width:6]
+            z = depth[::6, ::6]
+            valid = np.isfinite(z) & (z > 0.2) & (z < 10)
+            points = np.column_stack(
+                (
+                    ((columns - width / 2) * z / focal)[valid],
+                    ((rows - height / 2) * z / focal)[valid],
+                    z[valid],
+                )
+            )
+            estimate = view_ceiling_height(points)
+            if estimate is not None:
+                values.append(estimate)
+        found[room_id] = values
+    return found
