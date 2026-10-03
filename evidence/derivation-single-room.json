@@ -1,0 +1,18 @@
+{
+  "source": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_room\\rgb.mp4",
+  "source_sha256": "778648a6b2c749a16d52c9649dd579b396b0ee26fa788e5c1c021c46ace47662",
+  "photos": {
+    "room-1": [
+      "frame_0000.jpg",
+      "frame_0001.jpg",
+      "frame_0002.jpg",
+      "frame_0003.jpg",
+      "frame_0004.jpg",
+      "frame_0005.jpg",
+      "frame_0006.jpg"
+    ]
+  },
+  "video": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_room\\rgb.mp4",
+  "orientation": "Stills rotated upright by 90-degree steps from logged gravity, as an iPhone EXIF orientation tag would; no depth or pose reaches the pipeline.",
+  "note": "Derived samples, not independent iPhone photo captures."
+}

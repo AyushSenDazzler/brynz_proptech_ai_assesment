@@ -1,0 +1,48 @@
+{
+  "schema_version": "brynz-local-0.1",
+  "tier": "photos",
+  "status": "insufficient_evidence",
+  "rooms": [
+    {
+      "id": "room-1",
+      "name": "room-1",
+      "polygon": [],
+      "walls": [],
+      "openings": [],
+      "floor_area": {
+        "value": null,
+        "interval": null,
+        "unit": "m2",
+        "status": "unobserved",
+        "reason": "Structure-from-motion failed: insufficient overlap or camera translation."
+      },
+      "ceiling_height": {
+        "value": null,
+        "interval": null,
+        "unit": "m",
+        "status": "unobserved",
+        "reason": "Structure-from-motion failed: insufficient overlap or camera translation."
+      },
+      "geometry_model": "No geometry inferred without sufficient evidence."
+    }
+  ],
+  "adjacency": [],
+  "damage_regions": [],
+  "concealed_flags": [],
+  "scope_items": [],
+  "drift": {
+    "method": "SfM bundle adjustment",
+    "warning": "No explicit loop closure."
+  },
+  "provenance": {
+    "input": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\out\\derived-ceiling\\photos",
+    "calibration": "unverified"
+  },
+  "warnings": [
+    "Structure-from-motion failed: insufficient overlap or camera translation.",
+    "RGB measurements depend on a learned scale prior and inferred gravity.",
+    "Intervals uncalibrated; no photo/video accuracy gate claimed.",
+    "Shared SfM may place rooms but adjacency and non-overlap are not guaranteed.",
+    "RGB damage screening unavailable; geometric openings are unverified candidates."
+  ]
+}

@@ -1,10 +1,38 @@
 {
   "captures": [
-    {"id": "single-room-lidar", "path": "single_room"},
-    {"id": "floor-only-lidar", "path": "single_scan_floor_only"},
-    {"id": "single-room-video", "path": "single_room/rgb.mp4"},
-    {"id": "single-room-photos", "path": "out/derived/photos"}
+    {
+      "id": "single-room-lidar",
+      "path": "single_room"
+    },
+    {
+      "id": "floor-only-lidar",
+      "path": "single_scan_floor_only"
+    },
+    {
+      "id": "single-room-video",
+      "path": "single_room/rgb.mp4"
+    },
+    {
+      "id": "single-room-photos",
+      "path": "out/derived/photos"
+    },
+    {
+      "id": "ceiling-scan-lidar",
+      "path": "single_scan_with_ceiling"
+    },
+    {
+      "id": "ceiling-scan-photos",
+      "path": "out/derived-ceiling/photos"
+    }
   ],
   "repeat_pairs": [],
-  "missing_requirements": ["Physical ground truth", "3 rooms plus connector captured at all tiers", "Staged damage in 2 classes", "Independent repeat capture", "Consumer app exports and version", "Published Round 1 schema", "Independent uncertainty calibration"]
+  "missing_requirements": [
+    "Physical ground truth",
+    "3 rooms plus connector captured at all tiers",
+    "Staged damage in 2 classes",
+    "Independent repeat capture",
+    "Consumer app exports and version",
+    "Published Round 1 schema",
+    "Independent uncertainty calibration"
+  ]
 }

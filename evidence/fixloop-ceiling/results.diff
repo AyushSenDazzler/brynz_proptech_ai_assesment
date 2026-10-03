@@ -1,0 +1,23 @@
+--- before/result.json
+
++++ after/result.json
+
+@@ -21,7 +21,7 @@
+
+         "interval": null,
+         "unit": "m",
+         "status": "unobserved",
+-        "reason": "Structure-from-motion failed: insufficient overlap or camera translation."
++        "reason": "No photo showed both floor and ceiling planes."
+       },
+       "geometry_model": "No geometry inferred without sufficient evidence."
+     }
+@@ -40,6 +40,7 @@
+
+   },
+   "warnings": [
+     "Structure-from-motion failed: insufficient overlap or camera translation.",
++    "Single-view fallback used: only ceiling height may be reported; footprint withheld.",
+     "RGB measurements depend on a learned scale prior and inferred gravity.",
+     "Intervals uncalibrated; no photo/video accuracy gate claimed.",
+     "Shared SfM may place rooms but adjacency and non-overlap are not guaranteed.",

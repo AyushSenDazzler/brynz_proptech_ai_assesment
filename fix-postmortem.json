@@ -1,0 +1,27 @@
+{
+  "declaration": "fix-declaration.json, committed before any fix code (tag fix-before)",
+  "outcome": "Gate did NOT move. Rooms with at least one dimension: 0 of 1 before, 0 of 1 after, on all three runs.",
+  "runs": [
+    {
+      "evidence": "evidence/fixloop-run1-sideways-stills",
+      "result": "0 of 1 -> 0 of 1",
+      "finding": "Derived stills were rotated 90 degrees; Stray logs the sensor in landscape orientation."
+    },
+    {
+      "evidence": "evidence/fixloop",
+      "result": "0 of 1 -> 0 of 1",
+      "finding": "After rotating stills upright from logged gravity (what an EXIF tag does on a real iPhone), none of the 7 stills of single_room shows floor and ceiling together."
+    },
+    {
+      "evidence": "evidence/fixloop-ceiling",
+      "result": "0 of 1 -> 0 of 1",
+      "finding": "Same on single_scan_with_ceiling, whose LiDAR run gives a 2.33 m ceiling: each still shows the ceiling or the floor, not both."
+    }
+  ],
+  "prediction_check": "The declared conditional branch held (0 of 1 if no still shows floor and ceiling together). The success criterion (1 of 1) was not met.",
+  "root_cause_verdict": "Half right. SfM does fail on sparse stills and the pipeline did discard usable per-image depth. But a single view yields a dimension only when floor and ceiling share the frame, and the derived stills (close-range, tilted, narrow field of view) rarely do. The missing ingredient is cross-view scale or gravity, not just a fallback.",
+  "what_shipped": "Single-view fallback (precision over recall: no value if floor and ceiling planes are not both found and parallel), upright derivation, rectangle layout default, damage opt-in.",
+  "not_claimed": "No accuracy movement and no photo-tier gate pass. Intervals remain uncalibrated; no physical ground truth.",
+  "protocol_change_from_finding": "CAPTURE_PROTOCOL.txt now asks for one level wide shot per room from a doorway showing floor and ceiling together.",
+  "next": "Estimate camera height and gravity from several views (cross-view planes) or require a wide shot, then re-declare before changing code."
+}

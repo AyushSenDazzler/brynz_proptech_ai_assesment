@@ -1,0 +1,18 @@
+{
+  "source": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_scan_with_ceiling\\c7d28f72c6\\rgb.mp4",
+  "source_sha256": "dad93c96d6255e7d9e344c772c1dad287198a0d1800dc64ee31ad8f91a54ae7c",
+  "photos": {
+    "room-1": [
+      "frame_0000.jpg",
+      "frame_0001.jpg",
+      "frame_0002.jpg",
+      "frame_0003.jpg",
+      "frame_0004.jpg",
+      "frame_0005.jpg",
+      "frame_0006.jpg"
+    ]
+  },
+  "video": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_scan_with_ceiling\\c7d28f72c6\\rgb.mp4",
+  "orientation": "Stills rotated upright by 90-degree steps from logged gravity, as an iPhone EXIF orientation tag would; no depth or pose reaches the pipeline.",
+  "note": "Derived samples, not independent iPhone photo captures."
+}

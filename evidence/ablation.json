@@ -1,0 +1,229 @@
+{
+  "on": {
+    "room-1:ceiling_height": {
+      "value": null,
+      "interval": null,
+      "unit": "m",
+      "status": "unobserved",
+      "reason": "Insufficient evidence."
+    },
+    "room-1:floor_area": {
+      "value": 20.86431,
+      "interval": [
+        20.10379,
+        21.62483
+      ],
+      "unit": "m2",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-1": {
+      "value": 3.43829,
+      "interval": [
+        3.36953,
+        3.50706
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-2": {
+      "value": 6.06822,
+      "interval": [
+        5.94685,
+        6.18958
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-3": {
+      "value": 3.43829,
+      "interval": [
+        3.36953,
+        3.50706
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-4": {
+      "value": 6.06822,
+      "interval": [
+        5.94685,
+        6.18958
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-2:opening-1": {
+      "value": 0.56,
+      "interval": [
+        0.48,
+        0.64
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-4:opening-1": {
+      "value": 0.84,
+      "interval": [
+        0.76,
+        0.92
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    }
+  },
+  "off": {
+    "room-1:ceiling_height": {
+      "value": null,
+      "interval": null,
+      "unit": "m",
+      "status": "unobserved",
+      "reason": "Insufficient evidence."
+    },
+    "room-1:floor_area": {
+      "value": 20.74179,
+      "interval": [
+        19.984,
+        21.49958
+      ],
+      "unit": "m2",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-1": {
+      "value": 3.43632,
+      "interval": [
+        3.36759,
+        3.50504
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-2": {
+      "value": 6.03605,
+      "interval": [
+        5.91533,
+        6.15677
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-3": {
+      "value": 3.43632,
+      "interval": [
+        3.36759,
+        3.50504
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-4": {
+      "value": 6.03605,
+      "interval": [
+        5.91533,
+        6.15677
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-2:opening-1": {
+      "value": 0.52,
+      "interval": [
+        0.44,
+        0.6
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    },
+    "room-1:wall-4:opening-1": {
+      "value": 0.8,
+      "interval": [
+        0.72,
+        0.88
+      ],
+      "unit": "m",
+      "status": "uncalibrated",
+      "reason": null
+    }
+  },
+  "drift": {
+    "method": "bounded overlapping-fragment translation ICP",
+    "accepted_constraints": 11,
+    "fragment_translations_m": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.00256627,
+        -0.00273022,
+        -0.00115113
+      ],
+      [
+        0.003087,
+        -0.00374101,
+        -0.00438456
+      ],
+      [
+        -0.00510028,
+        -0.00343554,
+        -0.0015416
+      ],
+      [
+        -0.00276704,
+        -0.00696577,
+        0.00256253
+      ],
+      [
+        -0.00311803,
+        -0.00498124,
+        0.00907269
+      ],
+      [
+        -0.01097805,
+        -0.00652013,
+        0.01719059
+      ],
+      [
+        -0.00422023,
+        -0.00997983,
+        0.05004931
+      ],
+      [
+        -0.00422023,
+        -0.00997983,
+        0.05004931
+      ],
+      [
+        -0.0070945,
+        -0.01377292,
+        0.05121055
+      ],
+      [
+        -0.00157457,
+        -0.00835449,
+        0.05161747
+      ],
+      [
+        -0.00157457,
+        -0.00835449,
+        0.05161747
+      ]
+    ],
+    "max_translation_m": 0.0535,
+    "warning": "Translation-only local correction; no global loop closure or drift guarantee."
+  },
+  "accuracy_delta": "unscored: no ground truth"
+}

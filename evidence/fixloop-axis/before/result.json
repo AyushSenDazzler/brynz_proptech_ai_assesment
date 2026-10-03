@@ -1,0 +1,68 @@
+{
+  "schema_version": "brynz-local-0.1",
+  "tier": "lidar",
+  "status": "insufficient_evidence",
+  "rooms": [
+    {
+      "id": "room-1",
+      "name": "room-1",
+      "polygon": [],
+      "walls": [],
+      "openings": [],
+      "floor_area": {
+        "value": null,
+        "interval": null,
+        "unit": "m2",
+        "status": "unobserved",
+        "reason": "Insufficient evidence."
+      },
+      "ceiling_height": {
+        "value": null,
+        "interval": null,
+        "unit": "m",
+        "status": "unobserved",
+        "reason": "Insufficient evidence."
+      },
+      "floor_level": null,
+      "ceiling_level": null,
+      "geometry_model": "single Manhattan rectangle; not arbitrary multi-room segmentation"
+    }
+  ],
+  "adjacency": [],
+  "damage_regions": [],
+  "concealed_flags": [],
+  "scope_items": [],
+  "drift": {
+    "method": "disabled",
+    "accepted_constraints": 0,
+    "warning": "Poses used as-is; drift gate not satisfied."
+  },
+  "warnings": [
+    "Floor and ceiling not both observed; ceiling height withheld.",
+    "Insufficient vertical-wall support; room footprint withheld.",
+    "Openings are unverified geometry candidates; absence does not establish no openings.",
+    "Damage screening not run; enable with --damage.",
+    "Watershed disabled; isolated rectangular layout.",
+    "Intervals are engineering bounds, not calibrated confidence intervals.",
+    "Multi-room partitions and damage screen are heuristic and unverified.",
+    "Output uses a provisional local schema; published Round 1 schema not supplied."
+  ],
+  "provenance": {
+    "input": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_room",
+    "sampled_frames": 172,
+    "points": 489422,
+    "frame_stride": 10,
+    "pixel_stride": 3,
+    "frame_range": [
+      0,
+      null
+    ],
+    "estimator": "robust",
+    "camera_convention": "legacy-arkit",
+    "layout": "rectangle",
+    "damage_screen": false,
+    "odometry_sha256": "4ff57818e7353af9c0fdf318bdd8d23140a42fddde11a30ec509ae93310affb1",
+    "calibration": "unverified",
+    "model_weights": "none"
+  }
+}

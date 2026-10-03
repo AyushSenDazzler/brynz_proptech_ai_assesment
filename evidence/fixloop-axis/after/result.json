@@ -1,0 +1,271 @@
+{
+  "schema_version": "brynz-local-0.1",
+  "tier": "lidar",
+  "status": "partial",
+  "rooms": [
+    {
+      "id": "room-1",
+      "name": "room-1",
+      "polygon": [
+        [
+          -0.53922,
+          -1.45329
+        ],
+        [
+          2.62783,
+          -0.11986
+        ],
+        [
+          0.2856,
+          5.44322
+        ],
+        [
+          -2.88146,
+          4.10979
+        ]
+      ],
+      "walls": [
+        {
+          "id": "room-1:wall-1",
+          "start": [
+            -0.53922,
+            -1.45329
+          ],
+          "end": [
+            2.62783,
+            -0.11986
+          ],
+          "length": {
+            "value": 3.43632,
+            "interval": [
+              3.36759,
+              3.50504
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          }
+        },
+        {
+          "id": "room-1:wall-2",
+          "start": [
+            2.62783,
+            -0.11986
+          ],
+          "end": [
+            0.2856,
+            5.44322
+          ],
+          "length": {
+            "value": 6.03605,
+            "interval": [
+              5.91533,
+              6.15677
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          }
+        },
+        {
+          "id": "room-1:wall-3",
+          "start": [
+            0.2856,
+            5.44322
+          ],
+          "end": [
+            -2.88146,
+            4.10979
+          ],
+          "length": {
+            "value": 3.43632,
+            "interval": [
+              3.36759,
+              3.50504
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          }
+        },
+        {
+          "id": "room-1:wall-4",
+          "start": [
+            -2.88146,
+            4.10979
+          ],
+          "end": [
+            -0.53922,
+            -1.45329
+          ],
+          "length": {
+            "value": 6.03605,
+            "interval": [
+              5.91533,
+              6.15677
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          }
+        }
+      ],
+      "openings": [
+        {
+          "id": "room-1:wall-2:opening-1",
+          "surface_id": "room-1:wall-2",
+          "class": "opening",
+          "status": "candidate",
+          "beyond_wall_rays": 11352,
+          "offset": {
+            "value": 4.56,
+            "interval": [
+              4.48,
+              4.64
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "width": {
+            "value": 0.52,
+            "interval": [
+              0.44,
+              0.6
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "height": {
+            "value": 1.4,
+            "interval": [
+              1.32,
+              1.48
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "bottom_height": {
+            "value": 0.28,
+            "interval": [
+              0.2,
+              0.36
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "rule": "Beyond-wall ray support, low wall occupancy, connected gap"
+        },
+        {
+          "id": "room-1:wall-4:opening-1",
+          "surface_id": "room-1:wall-4",
+          "class": "opening",
+          "status": "candidate",
+          "beyond_wall_rays": 48445,
+          "offset": {
+            "value": 1.44,
+            "interval": [
+              1.36,
+              1.52
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "width": {
+            "value": 0.8,
+            "interval": [
+              0.72,
+              0.88
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "height": {
+            "value": 1.28,
+            "interval": [
+              1.2,
+              1.36
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "bottom_height": {
+            "value": 0.12,
+            "interval": [
+              0.04,
+              0.2
+            ],
+            "unit": "m",
+            "status": "uncalibrated",
+            "reason": null
+          },
+          "rule": "Beyond-wall ray support, low wall occupancy, connected gap"
+        }
+      ],
+      "floor_area": {
+        "value": 20.74179,
+        "interval": [
+          19.984,
+          21.49958
+        ],
+        "unit": "m2",
+        "status": "uncalibrated",
+        "reason": null
+      },
+      "ceiling_height": {
+        "value": null,
+        "interval": null,
+        "unit": "m",
+        "status": "unobserved",
+        "reason": "Insufficient evidence."
+      },
+      "floor_level": null,
+      "ceiling_level": null,
+      "geometry_model": "single Manhattan rectangle; not arbitrary multi-room segmentation",
+      "orientation_rad": 0.398505
+    }
+  ],
+  "adjacency": [],
+  "damage_regions": [],
+  "concealed_flags": [],
+  "scope_items": [],
+  "drift": {
+    "method": "disabled",
+    "accepted_constraints": 0,
+    "warning": "Poses used as-is; drift gate not satisfied."
+  },
+  "warnings": [
+    "Floor and ceiling not both observed; ceiling height withheld.",
+    "Rectangular enclosure is a model assumption; furniture and alcoves can bias it.",
+    "Openings are unverified geometry candidates; absence does not establish no openings.",
+    "Damage screening not run; enable with --damage.",
+    "Watershed disabled; isolated rectangular layout.",
+    "Intervals are engineering bounds, not calibrated confidence intervals.",
+    "Multi-room partitions and damage screen are heuristic and unverified.",
+    "Output uses a provisional local schema; published Round 1 schema not supplied."
+  ],
+  "provenance": {
+    "input": "C:\\Users\\AyushKumar\\Desktop\\Projects\\brynz\\single_room",
+    "sampled_frames": 172,
+    "points": 169560,
+    "frame_stride": 10,
+    "pixel_stride": 3,
+    "frame_range": [
+      0,
+      null
+    ],
+    "estimator": "robust",
+    "camera_convention": "opencv",
+    "layout": "rectangle",
+    "damage_screen": false,
+    "odometry_sha256": "4ff57818e7353af9c0fdf318bdd8d23140a42fddde11a30ec509ae93310affb1",
+    "calibration": "unverified",
+    "model_weights": "none"
+  }
+}

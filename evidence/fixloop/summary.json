@@ -1,0 +1,18 @@
+{
+  "gate": "Photo-tier any picture in, results out",
+  "metric": "rooms with at least one non-null dimension",
+  "before": "0 of 1",
+  "after": "0 of 1",
+  "after_ceiling_heights": {
+    "room-1": {
+      "value": null,
+      "interval": null,
+      "unit": "m",
+      "status": "unobserved",
+      "reason": "No photo showed both floor and ceiling planes."
+    }
+  },
+  "footprint_recovered_after": false,
+  "accuracy": "unscored: no physical ground truth",
+  "declaration": "fix-declaration.json"
+}

@@ -1,0 +1,87 @@
+{
+  "captures": [
+    {
+      "id": "single-room-lidar",
+      "tier": "lidar",
+      "status": "partial",
+      "timing": {
+        "elapsed_seconds": 6.355
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    },
+    {
+      "id": "floor-only-lidar",
+      "tier": "lidar",
+      "status": "insufficient_evidence",
+      "timing": {
+        "elapsed_seconds": 16.996
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    },
+    {
+      "id": "single-room-video",
+      "tier": "video",
+      "status": "insufficient_evidence",
+      "timing": {
+        "elapsed_seconds": 241.289
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    },
+    {
+      "id": "single-room-photos",
+      "tier": "photos",
+      "status": "insufficient_evidence",
+      "timing": {
+        "elapsed_seconds": 23.75
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    },
+    {
+      "id": "ceiling-scan-lidar",
+      "tier": "lidar",
+      "status": "partial",
+      "timing": {
+        "elapsed_seconds": 32.928
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    },
+    {
+      "id": "ceiling-scan-photos",
+      "tier": "photos",
+      "status": "insufficient_evidence",
+      "timing": {
+        "elapsed_seconds": 24.596
+      },
+      "accuracy": {
+        "status": "unscored",
+        "reason": "No independent ground truth supplied."
+      }
+    }
+  ],
+  "repeatability": [],
+  "missing_requirements": [
+    "Physical ground truth",
+    "3 rooms plus connector captured at all tiers",
+    "Staged damage in 2 classes",
+    "Independent repeat capture",
+    "Consumer app exports and version",
+    "Published Round 1 schema",
+    "Independent uncertainty calibration"
+  ],
+  "assessment_ready": false
+}

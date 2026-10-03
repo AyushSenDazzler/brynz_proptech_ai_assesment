@@ -1,0 +1,15 @@
+{
+  "before": {
+    "walls": 0,
+    "status": "insufficient_evidence"
+  },
+  "after": {
+    "walls": 4,
+    "status": "partial"
+  },
+  "root_cause": "Stray export uses OpenCV camera axes; raw ARKit sign flips corrupt fusion.",
+  "assessment_gate_delta": "unscored: no physical ground truth or prior scored gate available",
+  "reproduction": "Same code, data, sampling, rectangle layout, and disabled drift; only camera convention changes.",
+  "declaration": "fix-declaration.json",
+  "prediction": "4 enclosing walls after correction, 0 before"
+}
