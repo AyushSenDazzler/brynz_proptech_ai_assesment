@@ -24,7 +24,9 @@ def run_capture(
     convention="opencv",
     model_dir=Path("models/metric-small"),
     live=False,
-    partition=True,
+    partition=False,
+    damage=False,
+    fallback=True,
 ):
     path, out = Path(path), Path(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -34,7 +36,7 @@ def run_capture(
         if len(candidates) == 1:
             path = candidates[0].parent
         else:
-            return run_rgb_capture(path, out, model_dir, live, started)
+            return run_rgb_capture(path, out, model_dir, live, started, fallback)
     clouds, origins, frame_ids, warnings = load_stray(
         path, stride, pixel_stride, start=start, stop=stop, convention=convention
     )
@@ -58,7 +60,12 @@ def run_capture(
     )
     from brynz.damage import rules_and_scope, scan_lidar_damage
 
-    regions, damage_warnings = scan_lidar_damage(path, room, frame_ids, convention, frame_offsets)
+    if damage:
+        regions, damage_warnings = scan_lidar_damage(
+            path, room, frame_ids, convention, frame_offsets
+        )
+    else:
+        regions, damage_warnings = [], ["Damage screening not run; enable with --damage."]
     flags, scope = rules_and_scope(regions)
     from brynz.stitch import segment_floor
 
@@ -72,11 +79,12 @@ def run_capture(
         regions, flags, scope = [], [], []
         for candidate_room in rooms:
             candidate_room["openings"] = detect_openings(candidate_room, corrected, origins)
-            projected, messages = scan_lidar_damage(
-                path, candidate_room, frame_ids, convention, frame_offsets
-            )
-            regions.extend(projected)
-            damage_warnings.extend(messages)
+            if damage:
+                projected, messages = scan_lidar_damage(
+                    path, candidate_room, frame_ids, convention, frame_offsets
+                )
+                regions.extend(projected)
+                damage_warnings.extend(messages)
         flags, scope = rules_and_scope(regions)
     result = {
         "schema_version": "brynz-local-0.1",
@@ -107,6 +115,7 @@ def run_capture(
             "estimator": estimator,
             "camera_convention": convention,
             "layout": "partition" if partition else "rectangle",
+            "damage_screen": damage,
             "odometry_sha256": hashlib.sha256((path / "odometry.csv").read_bytes()).hexdigest(),
             "calibration": "unverified",
             "model_weights": "none",
@@ -120,8 +129,15 @@ def run_capture(
     return result
 
 
-def run_rgb_capture(path, out, model_dir, live, started):
-    from brynz.rgb import empty_room, prepare_photos, reconstruct_rgb, sample_video
+def run_rgb_capture(path, out, model_dir, live, started, fallback=True):
+    from brynz.rgb import (
+        ceiling_measurement,
+        empty_room,
+        prepare_photos,
+        reconstruct_rgb,
+        sample_video,
+        single_view_ceilings,
+    )
 
     tier = "video" if path.suffix.lower() in {".mp4", ".mov", ".m4v"} else "photos"
     images = out / "images"
@@ -169,6 +185,24 @@ def run_rgb_capture(path, out, model_dir, live, started):
             empty_room(room_id, warnings[-1] if warnings else "Reconstruction failed.")
             for room_id in groups
         ]
+    unmeasured = {
+        room["id"]
+        for room in rooms
+        if not room["polygon"] and room["ceiling_height"]["value"] is None
+    }
+    if fallback and unmeasured:
+        try:
+            ceilings = single_view_ceilings(
+                images, {key: groups[key] for key in unmeasured}, out, model_dir, not live
+            )
+            for room in rooms:
+                if room["id"] in ceilings:
+                    room["ceiling_height"] = ceiling_measurement(ceilings[room["id"]])
+            warnings.append(
+                "Single-view fallback used: only ceiling height may be reported; footprint withheld."
+            )
+        except (ImportError, ValueError, RuntimeError, OSError) as error:
+            warnings.append(f"Single-view fallback unavailable: {error}")
     from brynz.stitch import room_adjacency
 
     adjacency, overlaps = room_adjacency(rooms)
@@ -179,7 +213,9 @@ def run_rgb_capture(path, out, model_dir, live, started):
     result = {
         "schema_version": "brynz-local-0.1",
         "tier": tier,
-        "status": "partial" if any(room["polygon"] for room in rooms) else "insufficient_evidence",
+        "status": "partial"
+        if any(room["polygon"] or room["ceiling_height"]["value"] is not None for room in rooms)
+        else "insufficient_evidence",
         "rooms": rooms,
         "adjacency": adjacency,
         "damage_regions": [],
@@ -220,10 +256,25 @@ def main():
     run.add_argument("--camera-convention", choices=["opencv", "legacy-arkit"], default="opencv")
     run.add_argument("--model-dir", type=Path, default=Path("models/metric-small"))
     run.add_argument("--live", action="store_true", help="Bypass depth cache")
-    run.add_argument("--layout", choices=["partition", "rectangle"], default="partition")
+    run.add_argument("--layout", choices=["partition", "rectangle"], default="rectangle")
+    run.add_argument("--damage", action="store_true", help="Run heuristic LiDAR damage screen")
+    run.add_argument(
+        "--no-single-view-fallback",
+        action="store_true",
+        help="RGB tiers: do not estimate ceiling height from single photos when SfM fails",
+    )
     fetch = commands.add_parser("fetch-model", help="Download optional CPU metric depth weights")
     fetch.add_argument("--out", type=Path, default=Path("models/metric-small"))
-    for command in ["benchmark", "derive", "fixloop", "ablation", "inventory", "report", "bundle"]:
+    for command in [
+        "benchmark",
+        "derive",
+        "fixloop",
+        "fixloop-axis",
+        "ablation",
+        "inventory",
+        "report",
+        "bundle",
+    ]:
         helper = commands.add_parser(command)
         helper.add_argument("path", type=Path)
         helper.add_argument("--out", type=Path, default=Path("out") / command)
@@ -232,18 +283,28 @@ def main():
         "benchmark",
         "derive",
         "fixloop",
+        "fixloop-axis",
         "ablation",
         "inventory",
         "report",
         "bundle",
     }:
-        from brynz.benchmark import ablation, benchmark, bundle, derive_inputs, fixloop, inventory
+        from brynz.benchmark import (
+            ablation,
+            benchmark,
+            bundle,
+            derive_inputs,
+            fixloop,
+            fixloop_axis,
+            inventory,
+        )
         from brynz.output import render_report
 
         actions = {
             "benchmark": benchmark,
             "derive": derive_inputs,
             "fixloop": fixloop,
+            "fixloop-axis": fixloop_axis,
             "ablation": ablation,
             "inventory": inventory,
             "report": render_report,
@@ -277,6 +338,8 @@ def main():
             args.model_dir,
             args.live,
             args.layout == "partition",
+            args.damage,
+            not args.no_single_view_fallback,
         )
     except (ValueError, OSError, json.JSONDecodeError) as error:
         print(f"brynz: {error}", file=sys.stderr)
