@@ -10,18 +10,18 @@
     {
       "evidence": "evidence/fixloop",
       "result": "0 of 1 -> 0 of 1",
-      "finding": "After rotating stills upright from logged gravity (what an EXIF tag does on a real iPhone), none of the 7 stills of single_room shows floor and ceiling together."
+      "finding": "After rotating stills upright using logged gravity, the estimator found no qualifying floor/ceiling plane pair in the 7 derived stills. This does not prove that both surfaces were visually absent."
     },
     {
       "evidence": "evidence/fixloop-ceiling",
       "result": "0 of 1 -> 0 of 1",
-      "finding": "Same on single_scan_with_ceiling, whose LiDAR run gives a 2.33 m ceiling: each still shows the ceiling or the floor, not both."
+      "finding": "On single_scan_with_ceiling, whose LiDAR run gives a candidate 2.33 m height, the single-view estimator again found no qualifying plane pair. Narrow views, depth error and camera assumptions may contribute."
     }
   ],
-  "prediction_check": "The declared conditional branch held (0 of 1 if no still shows floor and ceiling together). The success criterion (1 of 1) was not met.",
-  "root_cause_verdict": "Half right. SfM does fail on sparse stills and the pipeline did discard usable per-image depth. But a single view yields a dimension only when floor and ceiling share the frame, and the derived stills (close-range, tilted, narrow field of view) rarely do. The missing ingredient is cross-view scale or gravity, not just a fallback.",
+  "prediction_check": "The conditional forecast permitted 0 of 1, but that is not prediction validation or meaningful gate movement. The success target of 1 of 1 was not met.",
+  "root_cause_verdict": "Incomplete. SfM fails on sparse stills and the pipeline did discard per-image depth, but the fallback found no supported floor/ceiling pair in one view. Missing observations, learned-depth error and assumed focal length/gravity may all contribute. Cross-view scale or gravity is unresolved; this was not fixed by the fallback.",
   "what_shipped": "Single-view fallback (precision over recall: no value if floor and ceiling planes are not both found and parallel), upright derivation, rectangle layout default, damage opt-in.",
   "not_claimed": "No accuracy movement and no photo-tier gate pass. Intervals remain uncalibrated; no physical ground truth.",
-  "protocol_change_from_finding": "CAPTURE_PROTOCOL.txt now asks for one level wide shot per room from a doorway showing floor and ceiling together.",
+  "protocol_change_from_finding": "docs/CAPTURE_PROTOCOL.md asks for a level wide shot per room from a doorway showing floor and ceiling together; this proposal is not physically validated.",
   "next": "Estimate camera height and gravity from several views (cross-view planes) or require a wide shot, then re-declare before changing code."
 }

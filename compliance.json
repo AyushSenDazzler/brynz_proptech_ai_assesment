@@ -1,21 +1,27 @@
 {
   "assessment_ready": false,
+  "author_capture_access": {
+    "iphone_available": false,
+    "android_app_experience": "Author reports a free-to-install Android app required a subscription for the needed scanning/export workflow.",
+    "verification": "App name/version and pricing evidence not supplied; not a general claim about Android apps.",
+    "effect": "Self-captured iPhone benchmark evidence unavailable; this does not waive required captures, measured ground truth, or free-tier incumbent comparison, and does not explain implementation failures."
+  },
   "requirements": [
     {
       "requirement": "Stock capture route",
-      "file": "CAPTURE_PROTOCOL.txt",
+      "file": "docs/CAPTURE_PROTOCOL.md",
       "artifact": "One-page proposed protocol",
       "status": "implemented, physical trial missing"
     },
     {
       "requirement": "Device matrix",
-      "file": "device-matrix.json",
+      "file": "docs/DEVICE_MATRIX.md",
       "artifact": "Intended devices and honest accuracy status",
       "status": "implemented, hardware unverified"
     },
     {
       "requirement": "uv clean-machine setup",
-      "file": "RUNBOOK.txt",
+      "file": "README.md",
       "artifact": "uv.lock and setup commands",
       "status": "tested locally; clean-machine time unverified"
     },
@@ -147,19 +153,19 @@
     },
     {
       "requirement": "Reproduction bundle",
-      "file": "RUNBOOK.txt",
+      "file": "README.md",
       "artifact": "out/submission/brynz-submission.zip (includes .git)",
       "status": "bundle includes source, .git, samples, evidence and lockfile; weights fetched separately"
     },
     {
       "requirement": "Technical report <=6 pages",
-      "file": "REPORT.txt",
+      "file": "docs/TECHNICAL_REPORT.md",
       "artifact": "out/report/report.pdf",
-      "status": "generated and verified at 2 pages"
+      "status": "Markdown source with verified three-page PDF; within the six-page limit"
     },
     {
       "requirement": "Mirrors / glass / glossy surfaces / low light",
-      "file": "REPORT.txt",
+      "file": "docs/TECHNICAL_REPORT.md",
       "artifact": "Failure modes and protocol precautions",
       "status": "documented, not empirically validated"
     },
