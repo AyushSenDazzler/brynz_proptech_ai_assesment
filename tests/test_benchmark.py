@@ -1,6 +1,6 @@
 import pytest
 
-from brynz.benchmark import repeatability, score
+from brynz.benchmark import fixloop_axis, repeatability, score
 from brynz.geometry import measurement
 from brynz.rgb import empty_room
 
@@ -44,3 +44,11 @@ def test_cross_tier_comparison_cannot_be_repeatability():
     second["tier"] = "photos"
     with pytest.raises(ValueError, match="same tier"):
         repeatability(first, second, independent=True)
+
+
+def test_axis_summary_points_to_retrospective_declaration(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "brynz.cli.run_capture", lambda *args, **kwargs: {**result(), "status": "partial"}
+    )
+    summary = fixloop_axis(tmp_path, tmp_path)
+    assert summary["declaration"] == "fix-declaration-axis-retrospective.json"

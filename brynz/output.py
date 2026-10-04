@@ -4,6 +4,7 @@ from pathlib import Path
 import jsonschema
 import matplotlib
 import numpy as np
+from markdown_it import MarkdownIt
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -13,16 +14,71 @@ def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
 
-def render_report(path, out):
+def _report_lines(path):
     import textwrap
 
+    source = Path(path).read_text(encoding="utf-8")
+    if Path(path).suffix.lower() != ".md":
+        return [
+            (line, "body")
+            for paragraph in source.splitlines()
+            for line in (textwrap.wrap(paragraph, width=92) or [""])
+        ]
+    lines = []
+    heading = False
+    list_item = False
+    row = None
+
+    def blank():
+        if lines and lines[-1][0]:
+            lines.append(("", "body"))
+
+    for token in MarkdownIt("commonmark").enable("table").parse(source):
+        if token.type == "heading_open":
+            blank()
+            heading = True
+        elif token.type == "heading_close":
+            heading = False
+            blank()
+        elif token.type == "list_item_open":
+            list_item = True
+        elif token.type == "list_item_close":
+            list_item = False
+        elif token.type == "tr_open":
+            row = []
+        elif token.type == "tr_close":
+            lines.extend((line, "body") for line in textwrap.wrap(" | ".join(row), width=92))
+            row = None
+        elif token.type == "inline":
+            text = "".join(
+                " " if child.type in {"softbreak", "hardbreak"} else child.content
+                for child in (token.children or [])
+                if child.type in {"text", "code_inline", "softbreak", "hardbreak"}
+            )
+            if row is not None:
+                row.append(text)
+            else:
+                prefix = "- " if list_item else ""
+                style = "heading" if heading else "body"
+                lines.extend((line, style) for line in textwrap.wrap(prefix + text, width=92))
+        elif token.type in {"fence", "code_block"}:
+            blank()
+            for code_line in token.content.splitlines():
+                lines.extend(
+                    (line, "code") for line in (textwrap.wrap(code_line, width=92) or [""])
+                )
+            blank()
+        elif token.type == "paragraph_close" and not list_item and row is None:
+            blank()
+    return lines
+
+
+def render_report(path, out):
     from matplotlib.backends.backend_pdf import PdfPages
 
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    lines = []
-    for paragraph in Path(path).read_text(encoding="utf-8").splitlines():
-        lines.extend(textwrap.wrap(paragraph, width=92) or [""])
+    lines = _report_lines(path)
     count = max(1, int(np.ceil(len(lines) / 58)))
     if count > 6:
         raise ValueError("Technical report exceeds the six-page limit.")
@@ -30,15 +86,16 @@ def render_report(path, out):
     with PdfPages(target) as document:
         for page in range(count):
             figure = plt.figure(figsize=(8.27, 11.69))
-            figure.text(
-                0.06,
-                0.94,
-                "\n".join(lines[page * 58 : (page + 1) * 58]),
-                va="top",
-                family="monospace",
-                fontsize=9,
-                linespacing=1.25,
-            )
+            for index, (text, style) in enumerate(lines[page * 58 : (page + 1) * 58]):
+                figure.text(
+                    0.06,
+                    0.94 - index * 0.0145,
+                    text,
+                    va="top",
+                    family="monospace" if style == "code" else "DejaVu Sans",
+                    fontsize=11 if style == "heading" else 9,
+                    fontweight="bold" if style == "heading" else "normal",
+                )
             figure.text(0.5, 0.035, f"{page + 1} / {count}", ha="center", fontsize=9)
             document.savefig(figure)
             plt.close(figure)

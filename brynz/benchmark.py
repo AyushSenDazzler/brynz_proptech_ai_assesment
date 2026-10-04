@@ -260,7 +260,7 @@ def fixloop_axis(path, out):
         "root_cause": "Stray export uses OpenCV camera axes; raw ARKit sign flips corrupt fusion.",
         "assessment_gate_delta": "unscored: no physical ground truth or prior scored gate available",
         "reproduction": "Same code, data, sampling, rectangle layout, and disabled drift; only camera convention changes.",
-        "declaration": "fix-declaration.json",
+        "declaration": "fix-declaration-axis-retrospective.json",
         "prediction": "4 enclosing walls after correction, 0 before",
     }
     write_json(out / "summary.json", summary)
@@ -357,7 +357,7 @@ def bundle(path, out):
 
     path, out = Path(path).resolve(), Path(out).resolve()
     out.mkdir(parents=True, exist_ok=True)
-    directories = [path / "brynz", path / "tests", path / "evidence", path / ".git"]
+    directories = [path / "brynz", path / "tests", path / "docs", path / "evidence", path / ".git"]
     directories.extend(
         item
         for item in path.iterdir()
